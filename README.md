@@ -1,7 +1,6 @@
 # WebSocket Chat - ChatGPT/Cursor-like Streaming Chat
 
-<img width="1167" height="670" alt="image" src="https://github.com/
-user-attachments/assets/e6c2a2d2-cbb1-40d2-8f4c-a0077acab2c8" />
+<img width="1167" height="668" alt="image" src="https://github.com/user-attachments/assets/057b4749-7f76-4c56-81b3-f110356d7fd0" />
 
 A real-time chat application with streaming responses, similar to ChatGPT or Cursor. Built with TypeScript, Node.js WebSocket server, and a modern frontend.
 
