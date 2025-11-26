@@ -1,4 +1,4 @@
-const WS_URL = "ws://localhost:3001";
+const WS_URL = import.meta.env.WS_URL || "wss://chat-gpt-pq6b.onrender.com";
 
 const messagesEl = document.getElementById("messages");
 const formEl = document.getElementById("message-form");
