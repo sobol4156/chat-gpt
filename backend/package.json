@@ -1,7 +1,7 @@
 {
   "name": "ws-chat-backend",
   "version": "1.0.0",
-  "description": "WebSocket чат с потоковой (chunk) отправкой ответов",
+  "description": "WebSocket chat server with streaming (chunk) response delivery",
   "main": "server.js",
   "type": "module",
   "scripts": {

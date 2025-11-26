@@ -1,12 +1,13 @@
 {
   "name": "ws-chat-frontend",
   "version": "1.0.0",
-  "description": "Фронтенд чата с WebSocket и потоковыми ответами",
+  "description": "Frontend for WebSocket chat with streaming responses",
+  "type": "module",
   "scripts": {
+    "build:env": "node generate-env.js",
+    "prestart": "npm run build:env",
     "serve": "npx serve ."
   },
   "dependencies": {},
   "devDependencies": {}
 }
-
-
