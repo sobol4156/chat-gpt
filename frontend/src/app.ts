@@ -1,10 +1,8 @@
 import type { WSMessage, Message, ActiveStream } from "./types.js";
 
 const WS_URL =
-  window.ENV?.WS_URL ||
-  (location.hostname === "localhost" || location.hostname === "127.0.0.1"
-    ? "ws://localhost:3001"
-    : "wss://chat-gpt-pq6b.onrender.com");
+  window.ENV?.WS_URL || "ws://localhost:3001"
+
 
 const messagesEl = document.getElementById("messages") as HTMLElement;
 const formEl = document.getElementById("message-form") as HTMLElement;
@@ -219,6 +217,17 @@ if (sendBtnEl) {
 }
 
 if (inputEl) {
+  const updatePlaceholder = () => {
+    if (window.innerWidth <= 480) {
+      inputEl.placeholder = "Type a message...";
+    } else {
+      inputEl.placeholder = "Type a message and press Enter...";
+    }
+  };
+
+  updatePlaceholder();
+  window.addEventListener("resize", updatePlaceholder);
+
   inputEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
