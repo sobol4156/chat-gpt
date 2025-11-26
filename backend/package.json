@@ -8,9 +8,7 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "ws": "^8.18.0",
-    "@faker-js/faker": "^9.2.0"
+    "@faker-js/faker": "^9.2.0",
+    "ws": "^8.18.0"
   }
 }
-
-

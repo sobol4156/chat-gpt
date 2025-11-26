@@ -1,6 +1,7 @@
 import { WebSocketServer } from "ws";
 import { randomUUID } from "crypto";
 import { faker } from "@faker-js/faker";
+import http from "http";
 
 const PORT = process.env.PORT || 3001;
 
@@ -51,9 +52,30 @@ function streamFakeAnswer(ws, requestId, userText) {
   sendNextChunk();
 }
 
-const wss = new WebSocketServer({ port: PORT });
+const server = http.createServer((req, res) => {
+  res.writeHead(200, {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Content-Type": "application/json",
+  });
 
-wss.on("connection", (ws) => {
+  if (req.method === "OPTIONS") {
+    res.end();
+    return;
+  }
+
+  if (req.url === "/health") {
+    res.end(JSON.stringify({ status: "ok" }));
+    return;
+  }
+
+  res.end(JSON.stringify({ message: "WebSocket server is running" }));
+});
+
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws, req) => {
   console.log("Client connected to WebSocket");
 
   ws.on("message", (raw) => {
@@ -96,4 +118,8 @@ wss.on("connection", (ws) => {
   );
 });
 
-console.log(`WebSocket server is running at ws://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`WebSocket server is running on port ${PORT}`);
+  console.log(`HTTP server: http://localhost:${PORT}`);
+  console.log(`WebSocket: ws://localhost:${PORT}`);
+});
