@@ -5,8 +5,8 @@ import { dirname, join } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const envFile = join(__dirname, ".env");
-const env = {};
+const envFile = join(__dirname, "..", ".env");
+const env: Record<string, string> = {};
 
 try {
   const content = readFileSync(envFile, "utf-8");
@@ -27,4 +27,5 @@ try {
 }
 
 const output = `window.ENV = ${JSON.stringify(env, null, 2)};`;
-writeFileSync(join(__dirname, "env.js"), output);
+writeFileSync(join(__dirname, "..", "env.js"), output);
+

@@ -1,12 +1,17 @@
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import { randomUUID } from "crypto";
 import { faker } from "@faker-js/faker";
 import http from "http";
+import type { WSMessage, ChunkPayload, DonePayload } from "./types.js";
 
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || "3001", 10);
 
-function streamFakeAnswer(ws, requestId, userText) {
-  if (ws.readyState !== ws.OPEN) return;
+function streamFakeAnswer(
+  ws: WebSocket,
+  requestId: string,
+  userText: string
+): void {
+  if (ws.readyState !== WebSocket.OPEN) return;
 
   const question = (userText || "").trim();
 
@@ -21,18 +26,18 @@ function streamFakeAnswer(ws, requestId, userText) {
   const fullText = `${prefix}# ${title}\n\n${intro}\n\n${details}`;
 
   const chunkSize = 18;
-  const chunks = [];
+  const chunks: string[] = [];
   for (let i = 0; i < fullText.length; i += chunkSize) {
     chunks.push(fullText.slice(i, i + chunkSize));
   }
 
   let index = 0;
 
-  function sendNextChunk() {
-    if (ws.readyState !== ws.OPEN) return;
+  function sendNextChunk(): void {
+    if (ws.readyState !== WebSocket.OPEN) return;
 
     if (index < chunks.length) {
-      const payload = {
+      const payload: ChunkPayload = {
         type: "chunk",
         requestId,
         content: chunks[index],
@@ -41,7 +46,7 @@ function streamFakeAnswer(ws, requestId, userText) {
       index += 1;
       setTimeout(sendNextChunk, 80);
     } else {
-      const done = {
+      const done: DonePayload = {
         type: "done",
         requestId,
       };
@@ -75,12 +80,12 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocketServer({ server });
 
-wss.on("connection", (ws, req) => {
+wss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
   console.log("Client connected to WebSocket");
 
-  ws.on("message", (raw) => {
+  ws.on("message", (raw: Buffer) => {
     try {
-      const msg = JSON.parse(raw.toString("utf8"));
+      const msg: WSMessage = JSON.parse(raw.toString("utf8"));
 
       if (msg.type === "ping") {
         ws.send(JSON.stringify({ type: "pong", ts: Date.now() }));
@@ -123,3 +128,4 @@ server.listen(PORT, () => {
   console.log(`HTTP server: http://localhost:${PORT}`);
   console.log(`WebSocket: ws://localhost:${PORT}`);
 });
+

@@ -4,10 +4,16 @@
   "description": "Frontend for WebSocket chat with streaming responses",
   "type": "module",
   "scripts": {
-    "build:env": "node generate-env.js",
-    "prestart": "npm run build:env",
-    "serve": "npx serve ."
+    "build:env": "tsx src/generate-env.ts",
+    "dev": "vite",
+    "build": "npm run build:env && vite build",
+    "preview": "vite preview",
+    "serve": "npm run build && npx serve dist"
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "tsx": "^4.7.0"
+  }
 }

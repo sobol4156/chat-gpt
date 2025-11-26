@@ -1,29 +1,37 @@
+import type { WSMessage, Message, ActiveStream } from "./types.js";
+
 const WS_URL =
   window.ENV?.WS_URL ||
   (location.hostname === "localhost" || location.hostname === "127.0.0.1"
     ? "ws://localhost:3001"
     : "wss://chat-gpt-pq6b.onrender.com");
 
-const messagesEl = document.getElementById("messages");
-const formEl = document.getElementById("message-form");
-const inputEl = document.getElementById("message-input");
-const sendBtnEl = document.getElementById("send-btn");
-const statusEl = document.getElementById("ws-status");
+const messagesEl = document.getElementById("messages") as HTMLElement;
+const formEl = document.getElementById("message-form") as HTMLElement;
+const inputEl = document.getElementById("message-input") as HTMLTextAreaElement;
+const sendBtnEl = document.getElementById("send-btn") as HTMLButtonElement;
+const statusEl = document.getElementById("ws-status") as HTMLElement;
 
-let ws;
+let ws: WebSocket | null = null;
 let connected = false;
 let isSending = false;
 
-const messages = [];
+const messages: Message[] = [];
+const activeStreams = new Map<string, ActiveStream>();
 
-const activeStreams = new Map();
-
-function addMessage({ role, content, streamId = null, isSystem = false }) {
+function addMessage({
+  role,
+  content,
+  streamId = null,
+  isSystem = false,
+}: Message): void {
   messages.push({ role, content, streamId, isSystem });
   renderMessages();
 }
 
-function renderMessages() {
+function renderMessages(): void {
+  if (!messagesEl) return;
+
   messagesEl.innerHTML = "";
 
   messages.forEach((msg) => {
@@ -58,14 +66,16 @@ function renderMessages() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-function setStatus(text, mode) {
+function setStatus(text: string, mode: string): void {
+  if (!statusEl) return;
   statusEl.textContent = text;
   statusEl.classList.remove("online", "offline");
   if (mode) statusEl.classList.add(mode);
 }
 
-function setSending(next) {
+function setSending(next: boolean): void {
   isSending = next;
+  if (!sendBtnEl) return;
   sendBtnEl.disabled = next || !connected;
   if (next) {
     sendBtnEl.textContent = "Waiting for reply...";
@@ -74,7 +84,7 @@ function setSending(next) {
   }
 }
 
-function connectWS() {
+function connectWS(): void {
   setStatus("Connecting...", "");
 
   try {
@@ -88,13 +98,13 @@ function connectWS() {
   ws.onopen = () => {
     connected = true;
     setStatus("Online", "online");
-    sendBtnEl.disabled = false;
+    if (sendBtnEl) sendBtnEl.disabled = false;
   };
 
   ws.onclose = () => {
     connected = false;
     setStatus("Offline (reconnecting...)", "offline");
-    sendBtnEl.disabled = true;
+    if (sendBtnEl) sendBtnEl.disabled = true;
     setTimeout(() => {
       if (!connected) connectWS();
     }, 1500);
@@ -104,22 +114,30 @@ function connectWS() {
     setStatus("Connection error", "offline");
   };
 
-  ws.onmessage = (event) => {
+  ws.onmessage = (event: MessageEvent) => {
     try {
-      const msg = JSON.parse(event.data);
+      const msg: WSMessage = JSON.parse(event.data);
 
       if (msg.type === "system") {
-        addMessage({ role: "assistant", content: msg.content, isSystem: true });
+        addMessage({
+          role: "assistant",
+          content: msg.content || "",
+          isSystem: true,
+        });
         return;
       }
 
       if (msg.type === "error") {
-        addMessage({ role: "assistant", content: msg.error, isSystem: true });
+        addMessage({
+          role: "assistant",
+          content: msg.error || "",
+          isSystem: true,
+        });
         setSending(false);
         return;
       }
 
-      if (msg.type === "chunk") {
+      if (msg.type === "chunk" && msg.requestId) {
         const { requestId, content } = msg;
         let current = activeStreams.get(requestId);
         if (!current) {
@@ -131,13 +149,13 @@ function connectWS() {
             streamId: requestId,
           });
         }
-        current.content += content;
+        current.content += content || "";
         messages[current.index].content = current.content;
         renderMessages();
         return;
       }
 
-      if (msg.type === "done") {
+      if (msg.type === "done" && msg.requestId) {
         const { requestId } = msg;
         activeStreams.delete(requestId);
 
@@ -152,8 +170,8 @@ function connectWS() {
 
 connectWS();
 
-function handleSend() {
-  if (isSending || activeStreams.size > 0) return;
+function handleSend(): void {
+  if (isSending || activeStreams.size > 0 || !inputEl) return;
 
   const text = inputEl.value.trim();
   if (!text || !connected) return;
@@ -193,20 +211,25 @@ function handleSend() {
   }
 }
 
-sendBtnEl.addEventListener("click", (e) => {
-  e.preventDefault();
-  handleSend();
-});
-
-inputEl.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
+if (sendBtnEl) {
+  sendBtnEl.addEventListener("click", (e) => {
     e.preventDefault();
-    e.stopPropagation();
     handleSend();
-  }
-});
+  });
+}
 
-inputEl.addEventListener("input", () => {
-  inputEl.style.height = "auto";
-  inputEl.style.height = `${Math.min(inputEl.scrollHeight, 140)}px`;
-});
+if (inputEl) {
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleSend();
+    }
+  });
+
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = `${Math.min(inputEl.scrollHeight, 140)}px`;
+  });
+}
+

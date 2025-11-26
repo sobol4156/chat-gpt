@@ -2,13 +2,20 @@
   "name": "ws-chat-backend",
   "version": "1.0.0",
   "description": "WebSocket chat server with streaming (chunk) response delivery",
-  "main": "server.js",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsc --watch"
   },
   "dependencies": {
     "@faker-js/faker": "^9.2.0",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.3.3"
   }
 }
