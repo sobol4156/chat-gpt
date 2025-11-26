@@ -1,5 +1,8 @@
 ## Chat like ChatGPT/Cursor over WebSocket with streaming (chunked) answers
 
+<img width="1167" height="670" alt="image" src="https://github.com/user-attachments/assets/e6c2a2d2-cbb1-40d2-8f4c-a0077acab2c8" />
+
+
 The project consists of:
 
 - **backend** — Node.js WebSocket server that accepts messages and sends back answers in chunks
