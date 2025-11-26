@@ -1,0 +1,12 @@
+{
+  "name": "ws-chat-frontend",
+  "version": "1.0.0",
+  "description": "Фронтенд чата с WebSocket и потоковыми ответами",
+  "scripts": {
+    "serve": "npx serve ."
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
+
+

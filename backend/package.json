@@ -1,0 +1,16 @@
+{
+  "name": "ws-chat-backend",
+  "version": "1.0.0",
+  "description": "WebSocket чат с потоковой (chunk) отправкой ответов",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0",
+    "@faker-js/faker": "^9.2.0"
+  }
+}
+
+

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WS Chat (ChatGPT/Cursor-like)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div>
+          <div class="header-title">WebSocket Chat</div>
+          <div class="header-subtitle">
+            Streaming answers like ChatGPT/Cursor
+          </div>
+        </div>
+        <div class="status" id="ws-status">Connecting...</div>
+      </header>
+
+      <main class="chat-container">
+        <div id="messages" class="messages"></div>
+      </main>
+
+      <div id="message-form" class="input-bar">
+        <textarea
+          id="message-input"
+          class="input"
+          rows="1"
+          placeholder="Type a message and press Enter..."
+        ></textarea>
+        <button type="button" id="send-btn" class="send-btn">Send</button>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
